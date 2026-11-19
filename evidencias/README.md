@@ -1,6 +1,6 @@
 # Evidências técnicas
 
-Prints capturados direto das VMs (VirtualBox) em 19/11/2026. Data e hora aparecem na barra de tarefas do Windows ou no cabeçalho de cada tela do Debian.
+Prints da tela inteira do PC (19/11/2026): janela da VM com nome e RM no título, barra de tarefas e data/hora. As linhas pedidas no item 8 estão destacadas em vermelho.
 
 | Item do Forms | Arquivo | O que mostra |
 |---|---|---|

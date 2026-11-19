@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{SITE_NAME}} – serviços públicos de um jeito simples</title>
+  <meta name="description" content="Descubra onde ir, o que levar e como pedir ajuda para usar serviços públicos. Linguagem simples e site leve.">
+  <link rel="stylesheet" href="/css/estilo.css">
+  <script src="/js/acessibilidade.js" defer></script>
+</head>
+<body>
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="topo">
+    <div class="limite topo__linha">
+      <p class="marca"><span aria-hidden="true">●</span> {{SITE_NAME}}</p>
+      <div class="ferramentas" role="group" aria-label="Ajustes de leitura">
+        <button type="button" id="letra-menor" aria-label="Diminuir o tamanho da letra">A−</button>
+        <button type="button" id="letra-maior" aria-label="Aumentar o tamanho da letra">A+</button>
+        <button type="button" id="contraste" aria-pressed="false">Alto contraste</button>
+      </div>
+    </div>
+    <nav class="limite" aria-label="Menu principal">
+      <ul class="menu">
+        <li><a href="#servicos">Serviços</a></li>
+        <li><a href="#passos">Como usar</a></li>
+        <li><a href="#sem-internet">Sem internet?</a></li>
+        <li><a href="#seguranca">Seus dados</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="conteudo" class="limite">
+    <section class="destaque" aria-labelledby="titulo">
+      <h1 id="titulo">Encontre o serviço público que você precisa</h1>
+      <p class="lead">Aqui você descobre <strong>onde ir</strong>, <strong>o que levar</strong> e <strong>como pedir ajuda</strong>. Tudo explicado de um jeito simples.</p>
+      <a class="botao" href="#servicos">Ver serviços</a>
+    </section>
+
+    <section id="servicos" aria-labelledby="t-servicos">
+      <h2 id="t-servicos">Como podemos ajudar</h2>
+      <ul class="cartoes">
+        <li class="cartao">
+          <h3>Saúde</h3>
+          <p>Onde tomar vacina, marcar consulta e pegar remédio de graça.</p>
+          <p class="levar"><strong>Leve:</strong> cartão do SUS e documento com foto.</p>
+        </li>
+        <li class="cartao">
+          <h3>Documentos</h3>
+          <p>Como tirar RG, CPF e carteira de trabalho.</p>
+          <p class="levar"><strong>Leve:</strong> certidão de nascimento ou de casamento.</p>
+        </li>
+        <li class="cartao">
+          <h3>Ajuda social</h3>
+          <p>Como entrar no Cadastro Único e pedir benefícios.</p>
+          <p class="levar"><strong>Leve:</strong> CPF de todas as pessoas da casa e comprovante de endereço.</p>
+        </li>
+        <li class="cartao">
+          <h3>Trabalho</h3>
+          <p>Vagas de emprego e cursos gratuitos perto de você.</p>
+          <p class="levar"><strong>Leve:</strong> carteira de trabalho e CPF.</p>
+        </li>
+      </ul>
+    </section>
+
+    <section id="passos" aria-labelledby="t-passos">
+      <h2 id="t-passos">Como usar, em 3 passos</h2>
+      <ol class="passos">
+        <li><strong>Escolha</strong> o serviço que você precisa.</li>
+        <li><strong>Separe</strong> os documentos da lista.</li>
+        <li><strong>Vá</strong> ao local indicado ou ligue para pedir ajuda.</li>
+      </ol>
+    </section>
+
+    <section id="sem-internet" class="aviso" aria-labelledby="t-internet">
+      <h2 id="t-internet">Sem internet ou com internet fraca?</h2>
+      <p>Este site é leve e abre mesmo com sinal ruim. Se não conseguir acessar, <strong>ligue 156</strong> (atendimento da prefeitura) ou vá ao <strong>CRAS</strong> mais perto da sua casa. O atendimento é gratuito.</p>
+    </section>
+
+    <section id="seguranca" aria-labelledby="t-seguranca">
+      <h2 id="t-seguranca">Seus dados estão protegidos</h2>
+      <ul class="lista-check">
+        <li>Nunca pedimos senha, nem dados do banco.</li>
+        <li>Não guardamos suas informações pessoais.</li>
+        <li>Seguimos a Lei Geral de Proteção de Dados (LGPD).</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <div class="limite">
+      <p><strong>{{SITE_NAME}}</strong> · Projeto acadêmico FIAP Global Solution 2026 – CitizenTech</p>
+      <p>Equipe de infraestrutura:</p>
+      <ul class="equipe">{{EQUIPE}}</ul>
+      <p class="pequeno">Servidor: {{DOMAIN}} · Publicado em {{PUBLICADO}}</p>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,114 @@
+/* Conecta Cidadão - estilo acessível (contraste AA/AAA, letra grande, mobile first) */
+:root {
+  --texto: #1a1a1a;
+  --fundo: #ffffff;
+  --suave: #eef3f9;
+  --primaria: #0b4a8b;      /* 8.9:1 sobre branco */
+  --primaria-texto: #ffffff;
+  --aviso: #fff4d6;
+  --borda: #4a5a6a;
+  --foco: #ffbf47;
+}
+html[data-contraste="alto"] {
+  --texto: #ffffff;
+  --fundo: #000000;
+  --suave: #111111;
+  --primaria: #ffe14d;
+  --primaria-texto: #000000;
+  --aviso: #1a1a1a;
+  --borda: #ffffff;
+}
+
+html { font-size: 112.5%; }               /* 18px */
+html[data-letra="1"] { font-size: 125%; } /* 20px */
+html[data-letra="2"] { font-size: 140%; } /* 22.4px */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  line-height: 1.6;
+  color: var(--texto);
+  background: var(--fundo);
+}
+
+.limite { max-width: 60rem; margin: 0 auto; padding: 0 1rem; }
+
+h1, h2, h3 { line-height: 1.25; }
+h1 { font-size: 1.9rem; margin: 0 0 .75rem; }
+h2 { font-size: 1.45rem; margin: 2.5rem 0 1rem; }
+h3 { font-size: 1.15rem; margin: 0 0 .5rem; }
+
+a { color: var(--primaria); text-underline-offset: .2em; }
+html[data-contraste="alto"] a { color: var(--primaria); }
+
+:focus-visible { outline: 4px solid var(--foco); outline-offset: 3px; }
+
+.pular {
+  position: absolute; left: -999px; top: 0;
+  background: var(--primaria); color: var(--primaria-texto);
+  padding: .75rem 1rem; z-index: 10;
+}
+.pular:focus { left: 1rem; top: 1rem; }
+
+/* Topo */
+.topo { background: var(--suave); border-bottom: 2px solid var(--borda); }
+.topo__linha { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; justify-content: space-between; padding-top: .75rem; }
+.marca { font-weight: 700; font-size: 1.2rem; margin: 0; color: var(--primaria); }
+.ferramentas { display: flex; gap: .5rem; flex-wrap: wrap; }
+.ferramentas button {
+  min-height: 48px; min-width: 48px; padding: .4rem .8rem;
+  font: inherit; font-weight: 700; cursor: pointer;
+  color: var(--texto); background: var(--fundo);
+  border: 2px solid var(--borda); border-radius: 8px;
+}
+.ferramentas button[aria-pressed="true"] { background: var(--primaria); color: var(--primaria-texto); }
+
+.menu { list-style: none; display: flex; flex-wrap: wrap; gap: .25rem 1.25rem; margin: .5rem 0 0; padding: 0 0 .75rem; }
+.menu a { display: inline-block; padding: .5rem 0; font-weight: 600; }
+
+/* Conteúdo */
+.destaque { padding: 2rem 0 1rem; }
+.lead { font-size: 1.15rem; max-width: 40rem; }
+
+.botao {
+  display: inline-block; min-height: 48px; padding: .7rem 1.4rem; margin-top: .5rem;
+  background: var(--primaria); color: var(--primaria-texto);
+  font-weight: 700; text-decoration: none; border-radius: 8px;
+}
+.botao:hover { text-decoration: underline; }
+
+.cartoes { list-style: none; padding: 0; margin: 0; display: grid; gap: 1rem; grid-template-columns: 1fr; }
+.cartao { background: var(--suave); border: 2px solid var(--borda); border-radius: 12px; padding: 1.25rem; }
+.cartao p { margin: 0 0 .5rem; }
+.levar { font-size: .95rem; }
+
+.passos { padding-left: 1.5rem; }
+.passos li { margin-bottom: .5rem; padding-left: .25rem; }
+
+.aviso { background: var(--aviso); border-left: 6px solid var(--primaria); padding: .25rem 1.25rem 1rem; margin-top: 2.5rem; border-radius: 4px; }
+.aviso h2 { margin-top: 1rem; }
+
+.lista-check { list-style: none; padding: 0; }
+.lista-check li::before { content: "✓ "; font-weight: 700; color: var(--primaria); }
+.lista-check li { margin-bottom: .4rem; }
+
+/* Rodapé */
+.rodape { margin-top: 3rem; padding: 1.5rem 0; background: var(--suave); border-top: 2px solid var(--borda); }
+.rodape p { margin: .25rem 0; }
+.equipe { margin: .25rem 0 .75rem; padding-left: 1.25rem; }
+.rm { white-space: nowrap; opacity: .85; }
+.pequeno { font-size: .9rem; }
+
+@media (min-width: 40rem) {
+  h1 { font-size: 2.4rem; }
+  .cartoes { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { scroll-behavior: auto !important; transition: none !important; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}

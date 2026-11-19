@@ -1,0 +1,26 @@
+[Unit]
+Description=CitizenTech - Monitoramento de infraestrutura (CPU, memoria, disco, DNS e HTTP)
+Documentation=file:///opt/citizentech/README.md
+After=network-online.target named.service apache2.service
+Wants=network-online.target
+# Nunca desiste de reiniciar, mesmo após muitas falhas seguidas
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+ExecStart=/opt/citizentech/scripts/monitor.sh
+Restart=always
+RestartSec=5
+Nice=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=citizentech-monitor
+
+# Endurecimento do processo
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectHome=read-only
+ProtectSystem=full
+
+[Install]
+WantedBy=multi-user.target

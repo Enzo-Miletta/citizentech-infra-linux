@@ -1,0 +1,59 @@
+﻿2026-11-19 16:32:46 [INFO] [teste-falha] Início da execução (usuário: root)
+
+==== Cenário: servidor web parado (systemctl stop apache2.service) ====
+2026-11-19 16:32:46 [INFO] [teste-falha] $ systemctl stop apache2.service
+2026-11-19 16:32:46 [WARN] [teste-falha] Site fora do ar: HTTP 000. Aguardando o monitor detectar e recuperar...
+2026-11-19 16:32:55 [OK] [teste-falha] Monitor detectou e reiniciou o apache2.service (em 9s)
+2026-11-19 16:32:55 [OK] [teste-falha] Site de volta: HTTP 200
+2026-11-19 16:32:55 [INFO] [teste-falha] Alertas registrados em /var/log/citizentech/alertas.log:
+      2026-11-19 16:32:54 [CRITICO] Serviço apache2 está FORA DO AR (estado: inactive)
+      2026-11-19 16:32:54 [ACAO] Serviço apache2 reiniciado automaticamente pelo monitor
+
+==== Cenário: processo do DNS morto (kill -9) ====
+2026-11-19 16:32:55 [INFO] [teste-falha] $ kill -9 10673
+2026-11-19 16:32:55 [WARN] [teste-falha] Processo 10673 do named.service finalizado à força
+2026-11-19 16:32:59 [OK] [teste-falha] systemd reiniciou o named.service (Restart=on-failure) - novo PID (em 4s)
+2026-11-19 16:32:59 [OK] [teste-falha] Novo PID: 12659 | www.conectacidadao-fiap.com -> 192.168.56.10
+
+==== Cenário: o próprio monitor morre (kill -9) ====
+2026-11-19 16:32:59 [INFO] [teste-falha] $ kill -9 11709
+2026-11-19 16:32:59 [WARN] [teste-falha] Monitor (PID 11709) finalizado à força
+2026-11-19 16:33:05 [OK] [teste-falha] systemd reiniciou o monitor (Restart=always) - novo PID (em 6s)
+2026-11-19 16:33:05 [OK] [teste-falha] Novo PID do monitor: 12733
+
+==== Cenário: CPU sobrecarregada ====
+2026-11-19 16:33:05 [INFO] [teste-falha] $ stress-ng --cpu 0 --timeout 30s
+2026-11-19 16:33:34 [OK] [teste-falha] Alerta de CPU alta gerado (em 29s)
+2026-11-19 16:33:45 [OK] [teste-falha] CPU normalizada (em 10s)
+2026-11-19 16:33:45 [INFO] [teste-falha] Alertas registrados em /var/log/citizentech/alertas.log:
+      2026-11-19 16:33:33 [ALERTA] CPU alta: 100% (limite 80%) - maior consumo: ps (100%)
+      2026-11-19 16:33:45 [RECUPERADO] CPU normalizada: 37%
+
+==== Cenário: memória quase esgotada ====
+2026-11-19 16:33:45 [INFO] [teste-falha] $ stress-ng --vm 1 --vm-bytes 1064153k --vm-keep --timeout 30s
+2026-11-19 16:33:56 [OK] [teste-falha] Alerta de memória alta gerado (em 11s)
+2026-11-19 16:34:20 [OK] [teste-falha] Memória normalizada (em 4s)
+2026-11-19 16:34:20 [INFO] [teste-falha] Alertas registrados em /var/log/citizentech/alertas.log:
+      2026-11-19 16:33:56 [ALERTA] CPU alta: 94% (limite 80%) - maior consumo: stress-ng-vm (40.0%)
+      2026-11-19 16:33:56 [ALERTA] Memória alta: 81% (limite 80%) - maior consumo: stress-ng-vm (52.7%)
+      2026-11-19 16:34:08 [RECUPERADO] CPU normalizada: 74%
+      2026-11-19 16:34:19 [RECUPERADO] Memória normalizada: 28%
+
+==== Cenário: disco cheio ====
+2026-11-19 16:34:20 [INFO] [teste-falha] $ fallocate -l 11550739333 /citizentech-teste-disco.img
+2026-11-19 16:34:20 [WARN] [teste-falha] Arquivo de 11015 MB criado: disco em 92%
+2026-11-19 16:34:31 [OK] [teste-falha] Alerta de disco cheio gerado (em 11s)
+2026-11-19 16:34:31 [INFO] [teste-falha] $ rm -f /citizentech-teste-disco.img
+2026-11-19 16:34:43 [OK] [teste-falha] Disco normalizado (em 12s)
+2026-11-19 16:34:43 [INFO] [teste-falha] Alertas registrados em /var/log/citizentech/alertas.log:
+      2026-11-19 16:34:31 [ALERTA] Disco / cheio: 92% (limite 85%)
+      2026-11-19 16:34:42 [RECUPERADO] Disco / normalizado: 31%
+
+==== Resumo do teste de falha ====
+  web parado             OK
+  dns kill -9            OK
+  monitor kill -9        OK
+  cpu alta               OK
+  memoria alta           OK
+  disco cheio            OK
+2026-11-19 16:34:43 [OK] [teste-falha] Concluído com sucesso em 117s

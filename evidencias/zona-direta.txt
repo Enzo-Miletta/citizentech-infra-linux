@@ -1,0 +1,23 @@
+﻿; Zona direta conectacidadao-fiap.com - gerada por CitizenTech em 2026-11-19 16:31:59
+$TTL 600
+@       IN  SOA ns1.conectacidadao-fiap.com. hostmaster.conectacidadao-fiap.com. (
+            2026111901  ; Serial (padrao RFC - data atual AAAAMMDDNN)
+            28800       ; Refresh (8 horas)
+            14400       ; Retry (4 horas)
+            86400       ; Expire (1 dia)
+            600 )       ; Minimum TTL (10 minutos)
+
+; Servidores de nome
+@       IN  NS      ns1.conectacidadao-fiap.com.
+@       IN  NS      ns2.conectacidadao-fiap.com.
+
+; Servidor de e-mail
+@       IN  MX  10  mail.conectacidadao-fiap.com.
+
+; Hosts
+@       IN  A       192.168.56.10
+ns1     IN  A       192.168.56.10     ; DNS primario (este servidor)
+ns2     IN  A       192.168.56.11     ; DNS secundario (ficticio)
+www     IN  A       192.168.56.10     ; DNS primario
+mail    IN  A       192.168.56.11     ; DNS secundario
+srv01   IN  A       192.168.56.10

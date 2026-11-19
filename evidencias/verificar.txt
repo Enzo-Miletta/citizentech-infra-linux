@@ -1,0 +1,145 @@
+﻿CitizenTech - Conecta Cidadão | Responsável: Enzo Miletta (RM 98677) | 19/11/2026 16:34:43
+
+==== Identificação e rede ====
+
+$ hostname; hostname -f
+    srv01
+    srv01.conectacidadao-fiap.com
+
+$ ip -br -4 addr
+    lo               UNKNOWN        127.0.0.1/8 
+    enp0s3           UP             10.0.2.15/24 
+    enp0s8           UP             192.168.56.10/24 
+
+$ ip route
+    default via 10.0.2.2 dev enp0s3 proto dhcp src 10.0.2.15 metric 1002 
+    10.0.2.0/24 dev enp0s3 proto dhcp scope link src 10.0.2.15 metric 1002 
+    192.168.56.0/24 dev enp0s8 proto kernel scope link src 192.168.56.10 metric 100 
+2026-11-19 16:34:43 [OK] [verificar] Hostname é srv01
+2026-11-19 16:34:43 [OK] [verificar] IP fixo 192.168.56.10 configurado
+
+==== Serviços ====
+
+$ systemctl is-active named apache2 citizentech-monitor auditd
+    active
+    active
+    active
+    active
+2026-11-19 16:34:43 [OK] [verificar] Serviço named ativo e habilitado no boot
+2026-11-19 16:34:43 [OK] [verificar] Serviço apache2 ativo e habilitado no boot
+2026-11-19 16:34:43 [OK] [verificar] Serviço citizentech-monitor ativo e habilitado no boot
+
+==== DNS (BIND9) ====
+
+$ dig @192.168.56.10 conectacidadao-fiap.com A +short
+    192.168.56.10
+
+$ dig @192.168.56.10 www.conectacidadao-fiap.com A +short
+    192.168.56.10
+
+$ dig @192.168.56.10 conectacidadao-fiap.com SOA +short
+    ns1.conectacidadao-fiap.com. hostmaster.conectacidadao-fiap.com. 2026111901 28800 14400 86400 600
+
+$ dig @192.168.56.10 conectacidadao-fiap.com NS +short
+    ns2.conectacidadao-fiap.com.
+    ns1.conectacidadao-fiap.com.
+
+$ dig @192.168.56.10 conectacidadao-fiap.com MX +short
+    10 mail.conectacidadao-fiap.com.
+
+$ dig @192.168.56.10 mail.conectacidadao-fiap.com A +short
+    192.168.56.11
+
+$ dig @192.168.56.10 -x 192.168.56.10 +short
+    srv01.conectacidadao-fiap.com.
+
+$ dig @192.168.56.10 conectacidadao-fiap.com AXFR
+    
+    ; <<>> DiG 9.20.30-1~deb13u1-Debian <<>> @192.168.56.10 conectacidadao-fiap.com AXFR
+    ; (1 server found)
+    ;; global options: +cmd
+    ; Transfer failed.
+
+$ dig @192.168.56.10 version.bind TXT CHAOS +short
+    "nao informado"
+2026-11-19 16:34:44 [OK] [verificar] conectacidadao-fiap.com resolve para 192.168.56.10
+2026-11-19 16:34:44 [OK] [verificar] www.conectacidadao-fiap.com resolve para 192.168.56.10
+2026-11-19 16:34:44 [OK] [verificar] SOA 28800/14400/86400/600
+2026-11-19 16:34:44 [OK] [verificar] NS ns1 e ns2
+2026-11-19 16:34:44 [OK] [verificar] MX mail.conectacidadao-fiap.com -> 192.168.56.11
+2026-11-19 16:34:44 [OK] [verificar] Reverso 192.168.56.10 -> srv01.conectacidadao-fiap.com
+2026-11-19 16:34:44 [OK] [verificar] Transferência de zona (AXFR) bloqueada
+2026-11-19 16:34:44 [OK] [verificar] Versão do BIND oculta
+2026-11-19 16:34:44 [OK] [verificar] Recursão desativada (não é DNS aberto)
+
+==== Servidor web (Apache) ====
+
+$ curl -sI http://www.conectacidadao-fiap.com/ --resolve www.conectacidadao-fiap.com:80:192.168.56.10
+    HTTP/1.1 200 OK
+    Date: Thu, 19 Nov 2026 19:34:44 GMT
+    Server: Apache
+    X-Content-Type-Options: nosniff
+    X-Frame-Options: DENY
+    Referrer-Policy: no-referrer
+    Permissions-Policy: geolocation=(), camera=(), microphone=()
+    Content-Security-Policy: default-src 'self'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'
+    Last-Modified: Thu, 19 Nov 2026 19:32:05 GMT
+    Accept-Ranges: bytes
+    Content-Length: 4735
+    Vary: Accept-Encoding
+    Content-Type: text/html
+    
+2026-11-19 16:34:44 [OK] [verificar] Site responde HTTP 200
+2026-11-19 16:34:44 [OK] [verificar] Cabeçalho Server sem versão
+2026-11-19 16:34:44 [OK] [verificar] Página de erro não revela versão
+2026-11-19 16:34:44 [OK] [verificar] Listagem de diretórios bloqueada
+2026-11-19 16:34:44 [OK] [verificar] Método TRACE desabilitado
+2026-11-19 16:34:44 [OK] [verificar] Site identifica a equipe
+
+==== Firewall ====
+
+$ ufw status numbered
+    Status: active
+    
+         To                         Action      From
+         --                         ------      ----
+    [ 1] 22/tcp                     ALLOW IN    Anywhere                   # SSH
+    [ 2] 53                         ALLOW IN    Anywhere                   # DNS
+    [ 3] 80/tcp                     ALLOW IN    Anywhere                   # HTTP
+    [ 4] 22/tcp (v6)                ALLOW IN    Anywhere (v6)              # SSH
+    [ 5] 53 (v6)                    ALLOW IN    Anywhere (v6)              # DNS
+    [ 6] 80/tcp (v6)                ALLOW IN    Anywhere (v6)              # HTTP
+    
+2026-11-19 16:34:45 [OK] [verificar] UFW ativo
+
+==== Monitoramento e auditoria ====
+
+$ systemctl show citizentech-monitor -p Restart -p MainPID -p ActiveState
+    Restart=always
+    MainPID=12733
+    ActiveState=active
+
+$ tail -n 3 /var/log/citizentech/metricas.log
+    2026-11-19 16:34:20 cpu=27% mem=28% disco=31% http=200 dns=192.168.56.10
+    2026-11-19 16:34:31 cpu=34% mem=28% disco=92% http=200 dns=192.168.56.10
+    2026-11-19 16:34:43 cpu=34% mem=27% disco=31% http=200 dns=192.168.56.10
+
+$ tail -n 5 /var/log/citizentech/alertas.log
+    2026-11-19 16:33:56 [ALERTA] Memória alta: 81% (limite 80%) - maior consumo: stress-ng-vm (52.7%)
+    2026-11-19 16:34:08 [RECUPERADO] CPU normalizada: 74%
+    2026-11-19 16:34:19 [RECUPERADO] Memória normalizada: 28%
+    2026-11-19 16:34:31 [ALERTA] Disco / cheio: 92% (limite 85%)
+    2026-11-19 16:34:42 [RECUPERADO] Disco / normalizado: 31%
+
+$ tail -n 5 /var/log/citizentech/audit.log
+    2026-11-19 16:33:34 -0300 user=root uid=0 tty=none pid=12434 host=srv01 script=teste-falha event=TEST scenario=cpu alta result=OK
+    2026-11-19 16:33:57 -0300 user=root uid=0 tty=none pid=12434 host=srv01 script=teste-falha event=TEST scenario=memoria alta result=OK
+    2026-11-19 16:34:31 -0300 user=root uid=0 tty=none pid=12434 host=srv01 script=teste-falha event=TEST scenario=disco cheio result=OK
+    2026-11-19 16:34:43 -0300 user=root uid=0 tty=none pid=12434 host=srv01 script=teste-falha event=END rc=0 dur=117s
+    2026-11-19 16:34:43 -0300 user=root uid=0 tty=none pid=13433 host=srv01 script=verificar event=START verificacao
+2026-11-19 16:34:45 [OK] [verificar] Monitor configurado com Restart=always
+2026-11-19 16:34:45 [OK] [verificar] Métricas sendo coletadas (último minuto)
+2026-11-19 16:34:45 [OK] [verificar] Regras do auditd carregadas
+
+==== Resultado ====
+2026-11-19 16:34:45 [INFO] [verificar] 24 verificações OK, 0 com falha

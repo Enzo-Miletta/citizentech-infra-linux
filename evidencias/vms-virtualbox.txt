@@ -1,0 +1,4 @@
+﻿# VBoxManage list vms  (19/11/2026 19:03)
+"Debian - Enzo Miletta - RM: 98677" {15e31497-d12a-4464-a338-b265e4241972}
+"Windows - Enzo Miletta - RM: 98677" {5ab199cb-5f6a-4436-8c78-6ec16833c845}
+"Debian (clone) - Enzo Miletta - RM: 98677" {dfe9a685-151b-461c-8efa-5a9f112fd5a8}

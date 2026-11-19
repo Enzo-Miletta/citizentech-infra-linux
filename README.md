@@ -61,6 +61,7 @@ Letra base de 18px com botões **A+ / A−**, modo **alto contraste**, cores com
 1. **Rede host-only:** *Arquivo → Ferramentas → Gerenciador de Rede* → criar rede host-only `192.168.56.1/24` (DHCP pode ficar ligado, o range dele começa em .100).
 2. **VM Linux:** Debian 12 (ou Ubuntu Server). Nome da VM: **`Debian - Enzo Miletta - RM: 98677`**.
    - Adaptador 1: **NAT** (internet para instalar pacotes) · Adaptador 2: **Host-only**.
+   - Se o instalador do Debian escolher o host-only (`enp0s8`) como interface principal, o NAT fica desligado e o `apt` falha. Corrija com `printf 'auto enp0s3\niface enp0s3 inet dhcp\n' > /etc/network/interfaces.d/10-nat && ifup enp0s3` e rode o `setup.sh` de novo.
 3. **Clone:** desligue a VM → botão direito → *Clonar* → nome **`Debian (clone) - Enzo Miletta - RM: 98677`** → *Gerar novos endereços MAC para todas as placas* → Clone completo. (O clone serve de cópia de segurança/servidor reserva; não ligue os dois com o mesmo IP fixo ao mesmo tempo.)
 4. **VM Windows (cliente):** nome **`Windows - Enzo Miletta - RM: 98677`**, com **apenas o adaptador Host-only** (assim ela usa somente o nosso DNS).
 
@@ -126,7 +127,7 @@ No item 7, digite o endereço com `http://` na frente para o navegador não tent
 
 **Enviar o site pelo WinSCP (opcional, como na aula):** protocolo SFTP, host `192.168.56.10`, porta 22, seu usuário do Debian. Copie o conteúdo de `site/` para `/var/www/html` (o usuário precisa ter permissão de escrita, ou envie para a pasta pessoal e copie com `sudo cp -r ~/site/. /var/www/html/`). Pelo `setup.sh` isso já é feito automaticamente.
 
-Guarde os prints em [`evidencias/`](evidencias/) para o repositório.
+Os prints deste laboratório estão em [`evidencias/prints/`](evidencias/prints/) (índice em [`evidencias/README.md`](evidencias/README.md)).
 
 ## 7. Teste de falha
 

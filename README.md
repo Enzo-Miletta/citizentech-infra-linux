@@ -21,8 +21,8 @@ Servidor Linux provisionado **100% via Shell Script** para publicar o site da Ci
    ┌──────────────────────────┐                ┌──────────────────────────────────┐
    │ VM Windows (cliente)     │   DNS  :53     │ VM Debian – srv01                │
    │ DNS = 192.168.56.10      │ ─────────────► │ 192.168.56.10 (IP fixo)          │
-   │ navegador / nslookup     │   HTTP :80     │ BIND9   conectacidadao.com.br    │
-   └──────────────────────────┘ ─────────────► │ Apache  www.conectacidadao.com.br│
+   │ navegador / nslookup     │   HTTP :80     │ BIND9   conectacidadao-fiap.com    │
+   └──────────────────────────┘ ─────────────► │ Apache  www.conectacidadao-fiap.com│
                                                │ UFW · auditd · citizentech-monitor│
                                                └───────────┬──────────────────────┘
                                                            │ adaptador NAT (só p/ apt)
@@ -31,8 +31,9 @@ Servidor Linux provisionado **100% via Shell Script** para publicar o site da Ci
 
 | Item | Valor (editável em `config/citizentech.conf`) |
 |---|---|
-| Domínio | `conectacidadao.com.br` / `www.conectacidadao.com.br` |
-| Servidor | `srv01.conectacidadao.com.br` / `ns1.conectacidadao.com.br` |
+| Site publicado em | `/var/www/html` (diretório padrão do Apache) |
+| Domínio | `conectacidadao-fiap.com` / `www.conectacidadao-fiap.com` |
+| Servidor | `srv01.conectacidadao-fiap.com` / `ns1.conectacidadao-fiap.com` |
 | IP fixo | `192.168.56.10/24` |
 | Serviços | `named` (BIND9), `apache2`, `citizentech-monitor`, `auditd`, `ufw` |
 
@@ -88,9 +89,9 @@ PowerShell **como administrador**:
 Get-NetAdapter                                     # descubra o nome do adaptador (ex.: Ethernet)
 Set-DnsClientServerAddress -InterfaceAlias "Ethernet" -ServerAddresses 192.168.56.10
 ipconfig /flushdns
-nslookup www.conectacidadao.com.br
-nslookup conectacidadao.com.br
-curl.exe -I http://www.conectacidadao.com.br       # Server: Apache (sem versão)
+nslookup www.conectacidadao-fiap.com
+nslookup conectacidadao-fiap.com
+curl.exe -I http://www.conectacidadao-fiap.com       # Server: Apache (sem versão)
 ```
 
 Transferência de zona (deve ser **recusada**):
@@ -98,23 +99,32 @@ Transferência de zona (deve ser **recusada**):
 ```
 nslookup
 > server 192.168.56.10
-> ls -d conectacidadao.com.br
-*** Can't list domain conectacidadao.com.br: Query refused
+> ls -d conectacidadao-fiap.com
+*** Can't list domain conectacidadao-fiap.com: Query refused
 > exit
 ```
 
-Abra **http://www.conectacidadao.com.br** no Edge. Para mostrar o cabeçalho sem versão: F12 → *Rede* → recarregue → clique no documento → *Cabeçalhos de resposta* → `Server: Apache`.
+Abra **http://www.conectacidadao-fiap.com** no Edge. Para mostrar o cabeçalho sem versão: F12 → *Rede* → recarregue → clique no documento → *Cabeçalhos de resposta* → `Server: Apache`.
 
-## 6. Prints para o Forms (tela inteira: VM, barra de tarefas e data/hora visíveis)
+## 6. Itens do Forms (prints com a tela inteira: VM, barra de tarefas e data/hora visíveis)
 
-Confira no Forms o texto exato de cada print. Sugestão do que capturar:
-
-| # | Print | Como |
+| Item | O que pede | Como fazer / o que printar |
 |---|---|---|
-| 1 | Laboratório: VMs Linux, clone e Windows com nome + RM | Janela do VirtualBox com as 3 VMs listadas |
-| 2 | DNS funcionando + IP fixo | Windows: `nslookup www.conectacidadao.com.br` · Linux: `bash scripts/verificar.sh` (parte DNS/IP) |
-| 3 | DNS com transferência de zona restrita | Windows: `ls -d` → *Query refused* (ou Linux: `dig @192.168.56.10 conectacidadao.com.br AXFR` → *Transfer failed*) |
-| 4 | Site publicado sem mostrar versão | Edge em `http://www.conectacidadao.com.br` com F12 mostrando `Server: Apache` |
+| 1–3 | VM Linux + clone + VM Windows com nome e RM | Seção 3 (sem print) |
+| — | Instalar DNS/HTTP e IP fixo na rede host-only (RFC 1918) | `bash setup.sh` faz os dois → marcar os 2 checks |
+| **4** (4 pts) | Zona direta: SOA (serial AAAAMMDDNN, 28800/14400/86400/600), NS ns1 e ns2, MX mail, A ns1/ns2/www/mail | Linux: `cat /etc/bind/zones/db.conectacidadao-fiap.com` |
+| **5** (2 pts) | `nslookup` no Windows resolvendo um registro A | Windows: `nslookup www.conectacidadao-fiap.com` (seção 5) |
+| 6 | Página CitizenTech no diretório HTML padrão do Apache | `setup.sh` publica `site/` em `/var/www/html` (ou envie a pasta `site/` pelo WinSCP: o SSH já fica instalado) |
+| **7** (2 pts) | Site abrindo no navegador do Windows | Edge com `http://www.conectacidadao-fiap.com` na barra de endereço |
+| **8** (2 prints) | Bloquear transferência de zona e ocultar versão do Apache | **8a:** `nano /etc/bind/named.conf.options` → marcar `allow-transfer { none; };` · **8b:** `nano /etc/apache2/conf-available/security.conf` → marcar `ServerTokens Prod` |
+
+Registros da zona: `ns1` e `www` = `192.168.56.10` (este servidor); `ns2` e `mail` = `192.168.56.11` (DNS secundário fictício, configurável em `NS2_IP`).
+
+No item 8, depois de tirar o print com a Ferramenta de Captura (Win+Shift+S), use a caneta vermelha para sublinhar a linha. Para provar que funciona, você pode mostrar também: `dig @192.168.56.10 conectacidadao-fiap.com AXFR` → *Transfer failed* e `curl.exe -I http://www.conectacidadao-fiap.com` → `Server: Apache`.
+
+No item 7, digite o endereço com `http://` na frente para o navegador não tentar HTTPS.
+
+**Enviar o site pelo WinSCP (opcional, como na aula):** protocolo SFTP, host `192.168.56.10`, porta 22, seu usuário do Debian. Copie o conteúdo de `site/` para `/var/www/html` (o usuário precisa ter permissão de escrita, ou envie para a pasta pessoal e copie com `sudo cp -r ~/site/. /var/www/html/`). Pelo `setup.sh` isso já é feito automaticamente.
 
 Guarde os prints em [`evidencias/`](evidencias/) para o repositório.
 

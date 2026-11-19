@@ -13,7 +13,16 @@ FQDN="${SERVER_HOSTNAME}.${DOMAIN}"
 IFS=. read -r O1 O2 O3 O4 <<< "$SERVER_IP"
 REV_ZONE="${O3}.${O2}.${O1}.in-addr.arpa"     # zona reversa /24
 ZONE_DIR="/etc/bind/zones"
-SERIAL="$(date +%Y%m%d%H)"
+ZONE_FILE="${ZONE_DIR}/db.${DOMAIN}"
+
+# Serial no padrão RFC 1912: AAAAMMDDNN (data atual + revisão do dia)
+TODAY="$(date +%Y%m%d)"
+OLD_SERIAL="$(awk '/; Serial/{print $1; exit}' "$ZONE_FILE" 2>/dev/null || true)"
+if [[ "$OLD_SERIAL" =~ ^${TODAY}([0-9]{2})$ ]]; then
+  SERIAL="${TODAY}$(printf '%02d' $(( 10#${BASH_REMATCH[1]} + 1 )))"
+else
+  SERIAL="${TODAY}01"
+fi
 
 # ------------------------------------------------------------ pacotes
 section "1/5 Pacotes"
@@ -169,29 +178,39 @@ zone "${REV_ZONE}" {
 };
 EOF
 
-cat > "${ZONE_DIR}/db.${DOMAIN}" <<EOF
+cat > "$ZONE_FILE" <<EOF
 ; Zona direta ${DOMAIN} - gerada por CitizenTech em $(date '+%F %T')
-\$TTL 3600
+\$TTL 600
 @       IN  SOA ns1.${DOMAIN}. hostmaster.${DOMAIN}. (
-            ${SERIAL}  ; serial (AAAAMMDDHH)
-            3600        ; refresh
-            900         ; retry
-            604800      ; expire
-            300 )       ; TTL negativo
+            ${SERIAL}  ; Serial (padrao RFC - data atual AAAAMMDDNN)
+            28800       ; Refresh (8 horas)
+            14400       ; Retry (4 horas)
+            86400       ; Expire (1 dia)
+            600 )       ; Minimum TTL (10 minutos)
+
+; Servidores de nome
 @       IN  NS      ns1.${DOMAIN}.
+@       IN  NS      ns2.${DOMAIN}.
+
+; Servidor de e-mail
+@       IN  MX  10  mail.${DOMAIN}.
+
+; Hosts
 @       IN  A       ${SERVER_IP}
-ns1     IN  A       ${SERVER_IP}
+ns1     IN  A       ${SERVER_IP}     ; DNS primario (este servidor)
+ns2     IN  A       ${NS2_IP}     ; DNS secundario (ficticio)
+www     IN  A       ${SERVER_IP}     ; DNS primario
+mail    IN  A       ${NS2_IP}     ; DNS secundario
 ${SERVER_HOSTNAME}   IN  A       ${SERVER_IP}
-www     IN  A       ${SERVER_IP}
-@       IN  TXT     "v=spf1 -all"
 EOF
 
 cat > "${ZONE_DIR}/db.${REV_ZONE}" <<EOF
 ; Zona reversa ${REV_ZONE} - gerada por CitizenTech em $(date '+%F %T')
-\$TTL 3600
+\$TTL 600
 @       IN  SOA ns1.${DOMAIN}. hostmaster.${DOMAIN}. (
-            ${SERIAL} 3600 900 604800 300 )
+            ${SERIAL} 28800 14400 86400 600 )
 @       IN  NS      ns1.${DOMAIN}.
+@       IN  NS      ns2.${DOMAIN}.
 ${O4}   IN  PTR     ${FQDN}.
 EOF
 
@@ -199,7 +218,7 @@ chown root:bind /etc/bind/named.conf.options /etc/bind/named.conf.local "$ZONE_D
 chmod 0644 "$ZONE_DIR"/db.*
 
 run named-checkconf
-run named-checkzone "$DOMAIN" "${ZONE_DIR}/db.${DOMAIN}"
+run named-checkzone "$DOMAIN" "$ZONE_FILE"
 run named-checkzone "$REV_ZONE" "${ZONE_DIR}/db.${REV_ZONE}"
 
 systemd_restart_policy "$DNS_SERVICE"

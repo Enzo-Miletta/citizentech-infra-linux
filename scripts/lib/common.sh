@@ -9,7 +9,7 @@ CT_LOG_DIR="/var/log/citizentech"
 CT_SCRIPT="$(basename "${0%.sh}")"
 CT_START="$(date +%s)"
 CT_CLEANUP_CMDS=()
-CT_PACKAGES=(bind9 bind9-utils bind9-dnsutils apache2 curl ufw auditd stress-ng)
+CT_PACKAGES=(bind9 bind9-utils bind9-dnsutils apache2 openssh-server curl ufw auditd stress-ng)
 
 if [[ ! -r "$CT_CONF" ]]; then
   echo "ERRO: arquivo de configuração não encontrado: $CT_CONF" >&2
@@ -107,6 +107,7 @@ validate_config() {
   local ipre='^([0-9]{1,3}\.){3}[0-9]{1,3}$'
   [[ "$SERVER_IP" =~ $ipre ]] || die "SERVER_IP inválido: $SERVER_IP"
   [[ -z "$NET_GATEWAY" || "$NET_GATEWAY" =~ $ipre ]] || die "NET_GATEWAY inválido: $NET_GATEWAY"
+  [[ "$NS2_IP" =~ $ipre ]] || die "NS2_IP inválido: $NS2_IP"
   [[ "$NET_PREFIX" =~ ^[0-9]+$ ]] && (( NET_PREFIX >= 8 && NET_PREFIX <= 30 )) || die "NET_PREFIX inválido: $NET_PREFIX"
   [[ "$DOMAIN" =~ ^[a-z0-9.-]+\.[a-z]{2,}$ ]] || die "DOMAIN inválido: $DOMAIN"
   [[ -n "$ALUNO_NOME" && -n "$ALUNO_RM" ]] || die "Preencha ALUNO_NOME e ALUNO_RM em $CT_CONF"

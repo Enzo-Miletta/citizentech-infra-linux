@@ -58,6 +58,16 @@ FileETag None
 </FilesMatch>
 EOF
 
+# A mesma linha no arquivo padrão do Debian (é este arquivo que vai no print do item 8)
+DEB_SEC=/etc/apache2/conf-available/security.conf
+if [[ -f "$DEB_SEC" ]]; then
+  backup_file "$DEB_SEC"
+  sed -i -E \
+    -e 's/^ServerTokens[[:space:]].*/ServerTokens Prod/' \
+    -e 's/^ServerSignature[[:space:]].*/ServerSignature Off/' "$DEB_SEC"
+  log OK "$DEB_SEC: $(grep -E '^Server(Tokens|Signature)' "$DEB_SEC" | tr '\n' ' ')"
+fi
+
 run a2enmod -q headers
 run a2dismod -q -f autoindex status    # sem listagem de diretórios nem /server-status
 run a2enconf -q zz-citizentech-seguranca

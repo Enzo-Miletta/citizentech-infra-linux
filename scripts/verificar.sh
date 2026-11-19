@@ -43,13 +43,19 @@ done
 section "DNS (BIND9)"
 show "dig @$SERVER_IP $DOMAIN A +short"
 show "dig @$SERVER_IP www.$DOMAIN A +short"
+show "dig @$SERVER_IP $DOMAIN SOA +short"
 show "dig @$SERVER_IP $DOMAIN NS +short"
+show "dig @$SERVER_IP $DOMAIN MX +short"
+show "dig @$SERVER_IP mail.$DOMAIN A +short"
 show "dig @$SERVER_IP -x $SERVER_IP +short"
 show "dig @$SERVER_IP $DOMAIN AXFR"
 show "dig @$SERVER_IP version.bind TXT CHAOS +short"
 check "$DOMAIN resolve para $SERVER_IP"     '[[ "$(dig +short @$SERVER_IP $DOMAIN A)" == "$SERVER_IP" ]]'
 check "www.$DOMAIN resolve para $SERVER_IP" '[[ "$(dig +short @$SERVER_IP www.$DOMAIN A)" == "$SERVER_IP" ]]'
-check "Reverso $SERVER_IP -> $FQDN"          '[[ "$(dig +short @$SERVER_IP -x $SERVER_IP)" == "$FQDN." ]]'
+check "SOA 28800/14400/86400/600"            'dig +short @$SERVER_IP $DOMAIN SOA | grep -qE " 28800 14400 86400 600$"'
+check "NS ns1 e ns2"                          '[[ "$(dig +short @$SERVER_IP $DOMAIN NS | sort | tr "\n" " ")" == "ns1.$DOMAIN. ns2.$DOMAIN. " ]]'
+check "MX mail.$DOMAIN -> $NS2_IP"            'dig +short @$SERVER_IP $DOMAIN MX | grep -q "mail.$DOMAIN." && [[ "$(dig +short @$SERVER_IP mail.$DOMAIN A)" == "$NS2_IP" ]]'
+check "Reverso $SERVER_IP -> $FQDN"         '[[ "$(dig +short @$SERVER_IP -x $SERVER_IP)" == "$FQDN." ]]'
 check "Transferência de zona (AXFR) bloqueada" 'dig @$SERVER_IP $DOMAIN AXFR | grep -q "Transfer failed"'
 check "Versão do BIND oculta"                 '! dig +short @$SERVER_IP version.bind TXT CHAOS | grep -q "[0-9]\.[0-9]"'
 check "Recursão desativada (não é DNS aberto)" 'dig @$SERVER_IP google.com A | grep -qE "status: REFUSED|WARNING: recursion requested but not available"'

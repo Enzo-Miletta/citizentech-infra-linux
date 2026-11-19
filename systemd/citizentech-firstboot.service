@@ -1,0 +1,17 @@
+[Unit]
+Description=CitizenTech - provisionamento automatico no primeiro boot (roda o setup.sh uma vez)
+After=network-online.target
+Wants=network-online.target
+ConditionPathExists=!/var/lib/citizentech/provisionado
+
+[Service]
+Type=oneshot
+WorkingDirectory=/root/citizentech
+ExecStartPre=-/usr/bin/git -C /root/citizentech pull --ff-only
+ExecStart=/bin/bash -c 'bash /root/citizentech/setup.sh > /var/log/citizentech-firstboot.log 2>&1'
+ExecStartPost=/bin/bash -c 'mkdir -p /var/lib/citizentech && touch /var/lib/citizentech/provisionado'
+TimeoutStartSec=0
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
